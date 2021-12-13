@@ -337,6 +337,8 @@ class ImageDataset(Dataset):
             img = Image.open(path)
             img = img.resize((self.image_size, self.image_size))
             img = np.array(img)
+            print(img.shape())
+            print(index)
             self.cached_images[index, :, :, :] = img
             self.cached_true[index] = 1
                 
