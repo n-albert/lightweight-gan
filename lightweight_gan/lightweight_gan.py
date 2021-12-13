@@ -339,7 +339,7 @@ class ImageDataset(Dataset):
             img = np.array(img)
             print(img.shape)
             print(index)
-            self.cached_images[index, :, :, :] = img
+            self.cached_images[index] = img
             self.cached_true[index] = 1
                 
         return self.transform(img)
