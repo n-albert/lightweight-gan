@@ -303,7 +303,7 @@ class ImageDataset(Dataset):
         self.transparent = transparent,
         self.greyscale = greyscale,
         assert len(self.paths) > 0, f'No images were found in {folder} for training'
-        self.cached_imgs = [None] * len(self.paths)
+        self.cached_imgs = np.zeroes((len(self.paths), 512, 512, 3))
 
         if transparent:
             num_channels = 4
@@ -321,7 +321,6 @@ class ImageDataset(Dataset):
         convert_image_fn = partial(convert_image_to, pillow_mode)
 
         self.transform = transforms.Compose([
-            transforms.Resize(image_size),
             RandomApply(aug_prob, transforms.RandomResizedCrop(image_size, scale=(0.5, 1.0), ratio=(0.98, 1.02)), transforms.CenterCrop(image_size)),
             transforms.ToTensor(),
         ])
@@ -335,9 +334,9 @@ class ImageDataset(Dataset):
         else:
             path = self.paths[index]
             img = Image.open(path)
-            img = resize_to_minimum_size(self.image_size, img)
+            img = img.resize(self.image_size)
             img = np.array(img)
-            self.cached_images[index] = img
+            self.cached_images[index, :, :, :] = img
                 
         return self.transform(img)
 
