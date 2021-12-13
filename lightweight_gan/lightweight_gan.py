@@ -303,7 +303,7 @@ class ImageDataset(Dataset):
         self.transparent = transparent,
         self.greyscale = greyscale,
         assert len(self.paths) > 0, f'No images were found in {folder} for training'
-        self.cached_imgs = np.zeroes((len(self.paths), 512, 512, 3))
+        self.cached_imgs = np.zeros((len(self.paths), 512, 512, 3))
 
         if transparent:
             num_channels = 4
