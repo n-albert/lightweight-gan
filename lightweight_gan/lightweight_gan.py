@@ -337,7 +337,7 @@ class ImageDataset(Dataset):
             path = self.paths[index]
             img = Image.open(path)
             img = img.resize((self.image_size, self.image_size))
-            img = np.asarray(img)
+            img = np.asarray(img).astype(np.float32)
             img = img[...,:3]
             #print(img.shape)
             #print(index)
