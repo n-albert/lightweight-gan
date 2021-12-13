@@ -304,6 +304,7 @@ class ImageDataset(Dataset):
         self.greyscale = greyscale,
         assert len(self.paths) > 0, f'No images were found in {folder} for training'
         self.cached_imgs = np.zeros((len(self.paths), 512, 512, 3))
+        self.cached_true = [None] * len(self.paths)
 
         if transparent:
             num_channels = 4
@@ -329,7 +330,7 @@ class ImageDataset(Dataset):
         return len(self.paths)
 
     def __getitem__(self, index):
-        if (self.cached_imgs[index]):
+        if (self.cached_true[index]):
             img = self.cached_imgs[index]
         else:
             path = self.paths[index]
@@ -337,6 +338,7 @@ class ImageDataset(Dataset):
             img = img.resize(self.image_size)
             img = np.array(img)
             self.cached_images[index, :, :, :] = img
+            self.cached_true[index] = 1
                 
         return self.transform(img)
 
