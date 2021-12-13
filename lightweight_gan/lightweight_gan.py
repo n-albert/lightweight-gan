@@ -322,6 +322,7 @@ class ImageDataset(Dataset):
         convert_image_fn = partial(convert_image_to, pillow_mode)
 
         self.transform = transforms.Compose([
+            transforms.ToPILImage(),
             RandomApply(aug_prob, transforms.RandomResizedCrop(image_size, scale=(0.5, 1.0), ratio=(0.98, 1.02)), transforms.CenterCrop(image_size)),
             transforms.ToTensor(),
         ])
@@ -336,7 +337,7 @@ class ImageDataset(Dataset):
             path = self.paths[index]
             img = Image.open(path)
             img = img.resize((self.image_size, self.image_size))
-            img = np.asarray(img)
+            #img = np.asarray(img)
             #print(img.shape)
             #print(index)
             self.cached_imgs[index] = img
