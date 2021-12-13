@@ -289,6 +289,7 @@ class ImageDataset(Dataset):
         self,
         folder,
         image_size,
+        cached = False,
         transparent = False,
         greyscale = False,
         aug_prob = 0.
@@ -297,7 +298,11 @@ class ImageDataset(Dataset):
         self.folder = folder
         self.image_size = image_size
         self.paths = [p for ext in EXTS for p in Path(f'{folder}').glob(f'**/*.{ext}')]
+        self.cached = cached,
+        self.transparent = transparent,
+        self.greyscale = greyscale,
         assert len(self.paths) > 0, f'No images were found in {folder} for training'
+        self.cached_imgs = [None] * len(self.paths)
 
         if transparent:
             num_channels = 4
@@ -315,20 +320,23 @@ class ImageDataset(Dataset):
         convert_image_fn = partial(convert_image_to, pillow_mode)
 
         self.transform = transforms.Compose([
-            transforms.Lambda(convert_image_fn),
-            transforms.Lambda(partial(resize_to_minimum_size, image_size)),
             transforms.Resize(image_size),
             RandomApply(aug_prob, transforms.RandomResizedCrop(image_size, scale=(0.5, 1.0), ratio=(0.98, 1.02)), transforms.CenterCrop(image_size)),
             transforms.ToTensor(),
-            transforms.Lambda(expand_fn)
         ])
 
     def __len__(self):
         return len(self.paths)
 
     def __getitem__(self, index):
-        path = self.paths[index]
-        img = Image.open(path)
+        if (self.cached_imgs[index]):
+            img = self.cached_imgs[index]
+        else:
+            path = self.paths[index]
+            img = Image.open(path)
+            img = resize_to_minimum_size(self.image_size, img)
+            self.cached_images[index] = img
+                
         return self.transform(img)
 
 # augmentations
