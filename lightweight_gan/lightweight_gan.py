@@ -1,5 +1,6 @@
 import os
 import json
+import numpy as np
 import multiprocessing
 from random import random
 import math
@@ -335,6 +336,7 @@ class ImageDataset(Dataset):
             path = self.paths[index]
             img = Image.open(path)
             img = resize_to_minimum_size(self.image_size, img)
+            img = np.array(img)
             self.cached_images[index] = img
                 
         return self.transform(img)
